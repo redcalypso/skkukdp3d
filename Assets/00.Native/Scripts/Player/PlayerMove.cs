@@ -1,12 +1,10 @@
-﻿using MoreMountains.Feedbacks;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerMove : MonoBehaviour
 {
     // requirements
     private CharacterController _characterController;
-    private MMF_Player _mmf_Player;
 
     [Header("UI")]
     [SerializeField] private Slider _staminaSlider;
@@ -54,7 +52,6 @@ public class PlayerMove : MonoBehaviour
     private void Awake()
     {
         if(_characterController == null) _characterController = GetComponent<CharacterController>();
-        if (_mmf_Player == null) _mmf_Player = GetComponent<MMF_Player>();
 
         _currentStamina = MaxStamina;
     }
