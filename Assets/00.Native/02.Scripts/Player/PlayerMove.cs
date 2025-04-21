@@ -5,11 +5,8 @@ public class PlayerMove : MonoBehaviour
 {
     // requirements
     private CharacterController _characterController;
-
-    [Header("UI")]
-    [SerializeField] private Slider _staminaSlider;
-    [SerializeField] private Image staminaFillImage;
-    private Color targetColor;
+    [SerializeField] private PlayerStats _playerStats;
+    [SerializeField] private UI_PlayerStats _uiPlayerStats;
 
     [Header("Player Settings")]
     [SerializeField] private float _playerMoveSpeed = 7f;
@@ -17,11 +14,7 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private float _jumpPower = 3f;
 
     [Header("Stamina Settings")]
-    public float MaxStamina = 100f;
-    public float StaminaDecreaseRate = 20f;
-    public float StaminaRecoveryRate = 30f;
     [SerializeField] private float _currentStamina;
-    [SerializeField] private float _staminaRecoveryDelay = 2f;
     private float _recoveryTimer = 0f;
     private bool _canRecoverStamina = true;
 
@@ -45,7 +38,6 @@ public class PlayerMove : MonoBehaviour
 
     private const float GRAVITY = -9.8f;
     private float _gVelocity = 0f;
-    private bool _isJumping = false;
     private bool _isWallContacted = false;
     private bool _isSprinting = false;
 
@@ -53,15 +45,14 @@ public class PlayerMove : MonoBehaviour
     {
         if(_characterController == null) _characterController = GetComponent<CharacterController>();
 
-        _currentStamina = MaxStamina;
+        _currentStamina = _playerStats.MaxStamina;
     }
 
     private void Start()
     {
-        if (_staminaSlider != null)
+        if (_uiPlayerStats != null)
         {
-            _staminaSlider.maxValue = MaxStamina;
-            _staminaSlider.value = _currentStamina;
+            _uiPlayerStats.Initialize(_playerStats, _currentStamina);
         }
     }
 
@@ -101,7 +92,6 @@ public class PlayerMove : MonoBehaviour
     {
         if (_characterController.collisionFlags == CollisionFlags.Below)
         {
-            _isJumping = false;
             currentJumpCount = 0;
         }
     }
@@ -122,7 +112,6 @@ public class PlayerMove : MonoBehaviour
         if (Input.GetButtonDown("Jump") && currentJumpCount < _maxJumpCount)
         {
             _gVelocity = _jumpPower;
-            _isJumping = true;
             currentJumpCount++;
         }
     }
@@ -142,8 +131,6 @@ public class PlayerMove : MonoBehaviour
                 RecoverStamina();       
             }
         }
-
-        StaminaUIUpdate();
     }
 
     private void WallRideFunction()
@@ -162,11 +149,14 @@ public class PlayerMove : MonoBehaviour
 
     private void UseStamina()
     {
-        _currentStamina -= StaminaDecreaseRate * Time.deltaTime;
+        _currentStamina -= _playerStats.StaminaDecreaseRate * Time.deltaTime;
         _currentStamina = Mathf.Max(_currentStamina, 0f);
         _canRecoverStamina = false;
         _recoveryTimer = 0f;
-        StaminaUIUpdate();
+        if (_uiPlayerStats != null)
+        {
+            _uiPlayerStats.UpdateStaminaUI(_currentStamina);
+        }
     }
 
     private void RecoverStamina()
@@ -174,17 +164,20 @@ public class PlayerMove : MonoBehaviour
         if (!_canRecoverStamina)
         {
             _recoveryTimer += Time.deltaTime;
-            if (_recoveryTimer >= _staminaRecoveryDelay)
+            if (_recoveryTimer >= _playerStats.StaminaRecoveryDelay)
             {
                 _canRecoverStamina = true;
             }
         }
         
-        if (_canRecoverStamina && _currentStamina < MaxStamina)
+        if (_canRecoverStamina && _currentStamina < _playerStats.MaxStamina)
         {
-            _currentStamina += StaminaRecoveryRate * Time.deltaTime;
-            _currentStamina = Mathf.Min(_currentStamina, MaxStamina);
-            StaminaUIUpdate();
+            _currentStamina += _playerStats.StaminaRecoveryRate * Time.deltaTime;
+            _currentStamina = Mathf.Min(_currentStamina, _playerStats.MaxStamina);
+            if (_uiPlayerStats != null)
+            {
+                _uiPlayerStats.UpdateStaminaUI(_currentStamina);
+            }
         }
     }
 
@@ -202,6 +195,10 @@ public class PlayerMove : MonoBehaviour
             _slideCooldownTimer = _slideCooldown;
             _slideDirection = moveDirection;
             _currentStamina -= _slideStaminaCost;
+            if (_uiPlayerStats != null)
+            {
+                _uiPlayerStats.UpdateStaminaUI(_currentStamina);
+            }
         }
 
         if (_isSliding)
@@ -211,25 +208,6 @@ public class PlayerMove : MonoBehaviour
             {
                 _isSliding = false;
             }
-        }
-    }
-
-    private void StaminaUIUpdate()
-    {
-        if (_staminaSlider != null) _staminaSlider.value = _currentStamina;
-
-        if (staminaFillImage != null)
-        {
-            float ratio = _currentStamina / MaxStamina;
-
-            if (ratio > 0.5f)
-                staminaFillImage.color = Color.green;
-            else if (ratio > 0.2f)
-                staminaFillImage.color = Color.yellow;
-            else
-                staminaFillImage.color = Color.red;
-
-            staminaFillImage.color = Color.Lerp(staminaFillImage.color, targetColor, Time.deltaTime * 10f);
         }
     }
 }
