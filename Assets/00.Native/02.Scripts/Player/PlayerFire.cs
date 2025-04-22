@@ -179,26 +179,27 @@ public class PlayerFire : MonoBehaviour
         if (FirePosition == null) return;
         
         Ray ray = new Ray(FirePosition.transform.position, Camera.main.transform.forward);
+        
         RaycastHit hitInfo;
         
         if (Physics.Raycast(ray, out hitInfo))
         {
             GameObject effect = Manager_ObjectPool.Instance.Get(BulletEffectPrefab.name, hitInfo.point);
+            
             if (effect != null)
             {
                 effect.transform.rotation = Quaternion.LookRotation(hitInfo.normal);
                 var particleSystem = effect.GetComponent<ParticleSystem>();
+                
                 if (particleSystem != null)
                 {
                     effect.SetActive(true);
                     particleSystem.Clear();
                     particleSystem.Play(true);
-                    Debug.Log($"Playing particle effect at {hitInfo.point}");
+                    
                     StartCoroutine(ReturnParticleToPool(BulletEffectPrefab.name, effect, particleSystem));
                 }
             }
-            
-            Debug.DrawLine(ray.origin, hitInfo.point, Color.red, 0.2f);
         }
     }
 
@@ -211,12 +212,6 @@ public class PlayerFire : MonoBehaviour
             yield return null;
         }
 
-        if (obj != null) Manager_ObjectPool.Instance.Return(tag, obj);
-    }
-
-    private IEnumerator ReturnToPoolAfterDelay(string tag, GameObject obj, float delay)
-    {
-        yield return new WaitForSeconds(delay);
         if (obj != null) Manager_ObjectPool.Instance.Return(tag, obj);
     }
 }

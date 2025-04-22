@@ -2,10 +2,10 @@ using UnityEngine;
 
 public class Bomb : MonoBehaviour
 {   
-    public GameObject BombEffectPrefab;
+    [SerializeField] private GameObject _bombEffectPrefab;
     private void OnCollisionEnter(Collision collision)
     {
-        Instantiate(BombEffectPrefab, transform.position, Quaternion.identity);
+        Instantiate(_bombEffectPrefab, transform.position, Quaternion.identity);
         gameObject.SetActive(false);
     }
 }

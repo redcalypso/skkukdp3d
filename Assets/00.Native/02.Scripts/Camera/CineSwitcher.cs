@@ -4,9 +4,9 @@ using Unity.Cinemachine;
 public class CineSwitcher : MonoBehaviour
 {
     [Header("Cinemachine Cams")]
-    public CinemachineCamera fpsCam;
-    public CinemachineCamera tpsCam;
-    public CinemachineCamera quarterCam;
+    [SerializeField] private CinemachineCamera _fpsCam;
+    [SerializeField] private CinemachineCamera _tpsCam;
+    [SerializeField] private CinemachineCamera _quarterCam;
 
     [Header("Priority Levels")]
     public int highPriority = 20;
@@ -34,20 +34,20 @@ public class CineSwitcher : MonoBehaviour
 
     private void SetPriorities(CameraView view)
     {
-        fpsCam.Priority = lowPriority;
-        tpsCam.Priority = lowPriority;
-        quarterCam.Priority = lowPriority;
+        _fpsCam.Priority = lowPriority;
+        _tpsCam.Priority = lowPriority;
+        _quarterCam.Priority = lowPriority;
 
         switch (view)
         {
             case CameraView.FPSView:
-                fpsCam.Priority = highPriority;
+                _fpsCam.Priority = highPriority;
                 break;
             case CameraView.TPSView:
-                tpsCam.Priority = highPriority;
+                _tpsCam.Priority = highPriority;
                 break;
             case CameraView.QuaterView:
-                quarterCam.Priority = highPriority;
+                _quarterCam.Priority = highPriority;
                 break;
         }
     }

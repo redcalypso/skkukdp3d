@@ -10,8 +10,8 @@ public class BombEffect : MonoBehaviour
 
     private void Start()
     {
-
         _particleSystem = GetComponent<ParticleSystem>();
+        
         if (_particleSystem != null) _particleSystem.Play();
         
         StartCoroutine(DestroyAfterDelay());

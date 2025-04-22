@@ -8,7 +8,8 @@ public class Manager_ObjectPool : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null)  Instance = this;
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
     }
 
     public GameObject Get(string tag, Vector3 position)

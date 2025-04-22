@@ -10,12 +10,12 @@ public enum CameraView
 
 public class Manager_CameraInput : MonoBehaviour
 {
-    public static Manager_CameraInput instance;
+    public static Manager_CameraInput Instance;
     public static Action<CameraView> OnCameraSwitch;
 
     private void Awake()
     {
-        if (instance == null) instance = this;
+        if (Instance == null) Instance = this;
         else Destroy(gameObject);
     }
     private void Update()
