@@ -50,10 +50,7 @@ public class PlayerMove : MonoBehaviour
 
     private void Start()
     {
-        if (_uiPlayerStats != null)
-        {
-            _uiPlayerStats.Initialize(_playerStats, _currentStamina);
-        }
+        if (_uiPlayerStats != null) _uiPlayerStats.Initialize(_playerStats, _currentStamina);
     }
 
     void Update()
@@ -63,7 +60,17 @@ public class PlayerMove : MonoBehaviour
 
         Vector3 direction = new Vector3(horizontal, 0, velocity);
         direction = direction.normalized;
-        direction = Camera.main.transform.TransformDirection(direction);
+        
+        Vector3 cameraForward = Camera.main.transform.forward;
+        Vector3 cameraRight = Camera.main.transform.right;
+        
+        cameraForward.y = 0;
+        cameraRight.y = 0;
+        
+        cameraForward.Normalize();
+        cameraRight.Normalize();
+        
+        direction = (cameraRight * horizontal + cameraForward * velocity).normalized;
         
         GroundCheck();
         WallRideCheck();
@@ -78,34 +85,19 @@ public class PlayerMove : MonoBehaviour
 
         float currentSpeed = _isSprinting ? _playerSprintSpeed : _playerMoveSpeed; // 삼항 연산자 너무 좋다 ㅎㅎ 개편함
         
-        if (!_isSliding)
-        {
-            _characterController.Move(direction * currentSpeed * Time.deltaTime);
-        }
-        else
-        {
-            _characterController.Move(_slideDirection * _slideDashForce * Time.deltaTime);
-        }
+        if (!_isSliding) _characterController.Move(direction * currentSpeed * Time.deltaTime);
+        else  _characterController.Move(_slideDirection * _slideDashForce * Time.deltaTime);
     }
 
     private void GroundCheck()
     {
-        if (_characterController.collisionFlags == CollisionFlags.Below)
-        {
-            currentJumpCount = 0;
-        }
+        if (_characterController.collisionFlags == CollisionFlags.Below) currentJumpCount = 0;
     }
     
     private void WallRideCheck()
     {
-        if (_characterController.collisionFlags == CollisionFlags.Sides)
-        {
-            _isWallContacted = true;
-        }
-        else
-        {
-            _isWallContacted = false;
-        }
+        if (_characterController.collisionFlags == CollisionFlags.Sides) _isWallContacted = true;
+        else _isWallContacted = false;
     }
     private void JumpFuction()
     {
@@ -141,10 +133,7 @@ public class PlayerMove : MonoBehaviour
             _gVelocity = _wallRideVelocity;
             UseStamina();
         }
-        else
-        {
-            _isWallRiding = false;
-        }
+        else _isWallRiding = false;
     }
 
     private void UseStamina()
@@ -153,10 +142,7 @@ public class PlayerMove : MonoBehaviour
         _currentStamina = Mathf.Max(_currentStamina, 0f);
         _canRecoverStamina = false;
         _recoveryTimer = 0f;
-        if (_uiPlayerStats != null)
-        {
-            _uiPlayerStats.UpdateStaminaUI(_currentStamina);
-        }
+        if (_uiPlayerStats != null) _uiPlayerStats.UpdateStaminaUI(_currentStamina);
     }
 
     private void RecoverStamina()
@@ -164,30 +150,21 @@ public class PlayerMove : MonoBehaviour
         if (!_canRecoverStamina)
         {
             _recoveryTimer += Time.deltaTime;
-            if (_recoveryTimer >= _playerStats.StaminaRecoveryDelay)
-            {
-                _canRecoverStamina = true;
-            }
+            if (_recoveryTimer >= _playerStats.StaminaRecoveryDelay) _canRecoverStamina = true;
         }
         
         if (_canRecoverStamina && _currentStamina < _playerStats.MaxStamina)
         {
             _currentStamina += _playerStats.StaminaRecoveryRate * Time.deltaTime;
             _currentStamina = Mathf.Min(_currentStamina, _playerStats.MaxStamina);
-            if (_uiPlayerStats != null)
-            {
-                _uiPlayerStats.UpdateStaminaUI(_currentStamina);
-            }
+            if (_uiPlayerStats != null) _uiPlayerStats.UpdateStaminaUI(_currentStamina);
         }
     }
 
     private void SlideFunction(Vector3 moveDirection)
     {
-        if (_slideCooldownTimer > 0)
-        {
-            _slideCooldownTimer -= Time.deltaTime;
-        }
-
+        if (_slideCooldownTimer > 0) _slideCooldownTimer -= Time.deltaTime;
+   
         if (Input.GetKeyDown(KeyCode.E) && !_isSliding && _slideCooldownTimer <= 0 && moveDirection.magnitude > 0)
         {
             _isSliding = true;
@@ -195,19 +172,13 @@ public class PlayerMove : MonoBehaviour
             _slideCooldownTimer = _slideCooldown;
             _slideDirection = moveDirection;
             _currentStamina -= _slideStaminaCost;
-            if (_uiPlayerStats != null)
-            {
-                _uiPlayerStats.UpdateStaminaUI(_currentStamina);
-            }
+            if (_uiPlayerStats != null) _uiPlayerStats.UpdateStaminaUI(_currentStamina);
         }
 
         if (_isSliding)
         {
             _slideTimer -= Time.deltaTime;
-            if (_slideTimer <= 0)
-            {
-                _isSliding = false;
-            }
+            if (_slideTimer <= 0) _isSliding = false;
         }
     }
 }

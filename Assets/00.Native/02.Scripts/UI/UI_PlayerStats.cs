@@ -4,8 +4,7 @@ using UnityEngine.UI;
 public class UI_PlayerStats : MonoBehaviour
 {
     [Header("UI References")]
-    [SerializeField] private Slider staminaSlider;
-    [SerializeField] private Image staminaFillImage;
+    [SerializeField] private Slider _staminaSlider;
 
     private PlayerStats _playerStats;
     private float _currentStamina;
@@ -13,10 +12,10 @@ public class UI_PlayerStats : MonoBehaviour
     public void Initialize(PlayerStats playerStats, float maxStamina)
     {
         _playerStats = playerStats;
-        if (staminaSlider != null)
+        if (_staminaSlider != null)
         {
-            staminaSlider.maxValue = maxStamina;
-            staminaSlider.value = maxStamina;
+            _staminaSlider.maxValue = maxStamina;
+            _staminaSlider.value = maxStamina;
         }
         _currentStamina = maxStamina;
     }
@@ -25,24 +24,6 @@ public class UI_PlayerStats : MonoBehaviour
     {
         _currentStamina = currentStamina;
         
-        if (staminaSlider != null)
-        {
-            staminaSlider.value = _currentStamina;
-        }
-
-        if (staminaFillImage != null)
-        {
-            float ratio = _currentStamina / _playerStats.MaxStamina;
-            Color targetColor;
-
-            if (ratio > 0.5f)
-                targetColor = Color.green;
-            else if (ratio > 0.2f)
-                targetColor = Color.yellow;
-            else
-                targetColor = Color.red;
-
-            staminaFillImage.color = Color.Lerp(staminaFillImage.color, targetColor, Time.deltaTime * 10f);
-        }
+        if (_staminaSlider != null) _staminaSlider.value = _currentStamina;
     }
 }
