@@ -12,7 +12,6 @@ public class PlayerFire : MonoBehaviour
 
     [Header("Pool Settings")]
     [SerializeField] private string _bombTag = "Bomb";
-    [SerializeField] private string _bulletEffectTag = "BulletEffect";
     [SerializeField] private int _bombPoolSize = 5;
     [SerializeField] private int _effectPoolSize = 10;
 
@@ -201,6 +200,7 @@ public class PlayerFire : MonoBehaviour
                 }
             }
         }
+        // MuzzlePoint 에 MuzzleFlash Effect 플레이
     }
 
     private IEnumerator ReturnParticleToPool(string tag, GameObject obj, ParticleSystem particleSystem)
